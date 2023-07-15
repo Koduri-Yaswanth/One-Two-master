@@ -13,11 +13,10 @@ function MyStack() {
     <Stack.Navigator>
       <Stack.Screen name="SignIn" component={SignIn} options={{headerShown:false}}/>
       <Stack.Screen name="SignUp" component={SignUp} options={{headerShown:false}}/>
-      <Stack.Screen name="Mainscreen" component={Mainscreen} />
       <Stack.Screen name="Forgotpass" component={Forgotpass} options={{headerShown:false}} />
       <Stack.Screen name="Verifyotp" component={Verifyotp} />
     </Stack.Navigator>
   );
 }
 
-export default MyStack
+export default MyStack

@@ -2,6 +2,8 @@ import React from 'react';
 import {Text, StyleSheet, View, Image, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native';
 import * as Font from 'expo-font';
 import {useState, useEffect} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { firebase } from '../firebaseConfig';
 
 const CustomText = (props) => {
   const [fontLoaded, setFontLoaded] = useState(false);
@@ -29,31 +31,58 @@ const CustomText = (props) => {
   );
 };
 
-function SignIn({navigation}){
+function SignIn(){
+    const navigation = useNavigation()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    loginuser = async (email, password) => {
+        try{
+            await firebase.auth().signInWithEmailAndPassword(email, password )
+        } catch(error){
+            alert(error.message)
+        }
+    }
+
     return(
         <KeyboardAvoidingView >
-            <View style={stylesa.mainview}>
+            <View style={styles.mainview}>
 
-            <View style={stylesa.Topview}>
-              <CustomText style={stylesa.MainHeading}>One Two</CustomText>
+            <View style={styles.Topview}>
+              <CustomText style={styles.MainHeading}>One Two</CustomText>
             </View>
-            <ScrollView style={stylesa.Bottomview}>
-                <Text style={stylesa.Heading}>
+            <ScrollView style={styles.Bottomview}>
+                <Text style={styles.Heading}>
                     Welcome{'\n'}
                     Back
                 </Text>
-                <View style={stylesa.Formview}>
-                    <TextInput placeholder={"Email address*"} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TextInput placeholder={"Password*"} secureTextEntry={true} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TouchableOpacity style={stylesa.FPassword} onPress={() => navigation.navigate('Forgotpass')}>
-                        <Text style={stylesa.SignUpText}>Forgot Password?</Text>
+                <View style={styles.Formview}>
+                    <TextInput 
+                    placeholder={"Email address*"} 
+                    placeholderTextColor={"grey"} 
+                    onChangeText={(email) => setEmail(email)}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    style={styles.TextInput}
+                    />
+                    <TextInput 
+                    placeholder={"Password*"} 
+                    secureTextEntry={true} 
+                    placeholderTextColor={"grey"}
+                    onChangeText={(password) => setPassword(password)}
+                    autoCapitalize="none"
+                    autoCorrect={false} 
+                    style={styles.TextInput}
+                    />
+                    <TouchableOpacity style={styles.FPassword} onPress={() => navigation.navigate('Forgotpass')}>
+                        <Text style={styles.SignUpText}>Forgot Password?</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={stylesa.Button} onPress={() => navigation.navigate('Mainscreen')}>
-                        <Text style={stylesa.ButtonText}>SIGN IN</Text>
+                    <TouchableOpacity style={styles.Button} onPress={() => loginuser(email, password)}>
+                        <Text style={styles.ButtonText}>LOG IN</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={stylesa.TextButton} onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={stylesa.SignUpText}>Don't have an account? Sign Up</Text>
+                <TouchableOpacity style={styles.TextButton} onPress={() => navigation.navigate('SignUp')}>
+                    <Text style={{color:"#73BBC9"}}>Don't have an account? Sign Up</Text>
                 </TouchableOpacity>    
             </ScrollView>
             
@@ -62,25 +91,19 @@ function SignIn({navigation}){
     )
 }
 
-const stylesa = StyleSheet.create({
+const styles = StyleSheet.create({
     MainHeading:{
         fontSize:55,
         marginTop:"25%",
         marginLeft:"25%"
-
-
     },
-
     mainview:{
-        
-       
         backgroundColor:"#C0DBEA"
     },
     Topview:{
         width:"100%",
         height:"30%",
-        backgroundColor:"#C0DBEA"
-       
+        backgroundColor:"#C0DBEA"      
     },
     Bottomview:{
         width:"100%",
@@ -88,7 +111,6 @@ const stylesa = StyleSheet.create({
         backgroundColor:"#080202",
         borderTopLeftRadius:30,
         borderTopRightRadius:30,
-
     },
     Imagestyle:{
       
@@ -119,8 +141,7 @@ const stylesa = StyleSheet.create({
         display:"flex",
         flexDirection:"column",
         alignItems:"center",
-        marginTop:30,
-       
+        marginTop:30,      
     },
     Button:{
         width:"90%",

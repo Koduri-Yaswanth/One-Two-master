@@ -3,11 +3,11 @@ import{View,Text, KeyboardAvoidingView,StyleSheet,Image,ScrollView,TextInput,Tou
 
 function Resetpassword(){
     return(
-        <KeyboardAvoidingView style={stylesa.mainview}>
+        <KeyboardAvoidingView style={styles.mainview}>
             <View>
 
             </View>
-        <ScrollView style={stylesa.Bottomview}>
+        <ScrollView style={styles.Bottomview}>
 
         </ScrollView>
             
@@ -17,7 +17,7 @@ function Resetpassword(){
 
     );
 }
-const stylesa = StyleSheet.create({
+const styles = StyleSheet.create({
 
     mainview:{
         

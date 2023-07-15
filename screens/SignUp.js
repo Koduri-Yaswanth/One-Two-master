@@ -1,158 +1,270 @@
-import React from 'react';  
-import {Text, StyleSheet, View, Image, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, SafeAreaView } from 'react-native';
+import React from 'react';
+import { Text, StyleSheet, View, Button, Image, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import * as Font from 'expo-font';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
+import BackIcon from 'react-native-vector-icons/Feather';
+import { firebase } from '../firebaseConfig';
+
+
+
 
 const CustomText = (props) => {
     const [fontLoaded, setFontLoaded] = useState(false);
-  
+
     useEffect(() => {
-      async function loadFont() {
-        await Font.loadAsync({
-          'custom-font': require('../assets/fonts/KaushanScript.ttf'),
-        });
-  
-        setFontLoaded(true);
-      }
-  
-      loadFont();
+        async function loadFont() {
+            await Font.loadAsync({
+                'custom-font': require('../assets/fonts/KaushanScript.ttf'),
+            });
+
+            setFontLoaded(true);
+        }
+
+        loadFont();
     }, []);
-  
+
     if (!fontLoaded) {
-      return <Text>Loading...</Text>;
+        return <Text>Loading...</Text>;
     }
-  
+
     return (
-      <Text style={{ ...props.style, fontFamily: 'custom-font' }}>
-        {props.children}
-      </Text>
+        <Text style={{ ...props.style, fontFamily: 'custom-font' }}>
+            {props.children}
+        </Text>
     );
-  };
+};
 
 
-function SignUp(navigation){
-    return(
-        <KeyboardAvoidingView style={stylesa.mainview}>
-            
+function SignUp(navigaton) {
+
+    const [fullname, setFullname] = useState('')
+    const [email, setEmail] = useState('')
+    const [mobile, setMobile] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmpassword, setConfirmpassword] = useState('')
+
+    
+
+    registerUser = async (fullname, email, mobile, password, confirmpassword) => {
+        await firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                firebase.auth().currentUser.sendEmailVerification({
+                    handleCodeInApp: true,
+                    url: 'https://one-two-master.firebaseapp.com',
+                })
+                    .then(() => {
+                        alert('verificaton Email Sent')
+                    }).catch((error) => {
+                        alert(error.message)
+                    })
+                    .then(() => {
+                        firebase.firestore().collecton('users')
+                            .doc(firebase.auth().currentUser.uid)
+                            .set({
+                                fullname,
+                                email,
+                                mobile
+                            })
+                    })
+                    .catch((error) => {
+                        alert(error.message)
+                    })
+            })
+            .catch((error) => {
+                alert(error.message)
+            })
+    }
 
 
-            <SafeAreaView style={stylesa.Topview}>
-                <CustomText style={stylesa.MainHeading}>One Two</CustomText>
+
+
+    return (
+        <KeyboardAvoidingView style={styles.mainview}>
+
+            <SafeAreaView style={styles.Topview}>
+                <CustomText style={styles.MainHeading}>One Two</CustomText>
             </SafeAreaView>
-            <ScrollView style={stylesa.Bottomview}>
-                <Text style={stylesa.Heading}>
+            <ScrollView style={styles.Bottomview}>
+                <BackIcon style={styles.icon} name="chevron-left" size={60} color={"#73BBC9"} />
+                <Text style={styles.Heading}>
                     CREATE ACCOUNT
                 </Text>
-                <View style={stylesa.Formview}>
-                    <TextInput placeholder={"Full Name"} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TextInput placeholder={"Email"} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TextInput placeholder={"Mobile"} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TextInput placeholder={"Password"} secureTextEntry={true} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TextInput placeholder={"Confirm Password"} secureTextEntry={true} placeholderTextColor={"grey"} style={stylesa.TextInput}/>
-                    <TouchableOpacity style={stylesa.Button}>
-                        <Text style={stylesa.ButtonText}>SIGN UP</Text>
+                <View style={styles.Formview}>
+                    <TextInput
+                        placeholder={"Full Name*"}
+                        placeholderTextColor={"grey"}
+                        onChangeText={(fullname) => setFullname(fullname)}
+                        autoCorrect={false}
+                        style={styles.TextInput}
+                    />
+                    <TextInput
+                        placeholder={"Email*"}
+                        placeholderTextColor={"grey"}
+                        onChangeText={(email) => setEmail(email)}
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        style={styles.TextInput}
+                    />
+                    <View style={styles.Formview1}>
+                        <TextInput 
+                    placeholder={"Mobile*"} 
+                    placeholderTextColor={"grey"} 
+                    onChangeText={(mobile) => setMobile(mobile)}
+                    autoCorrect={false} 
+                    style={styles.TextInput1}
+                    
+                    />
+                       
+                    <TouchableOpacity
+                        style={styles.Vbutton}>
+                        <Text style={styles.vtext}>Verify</Text>
+                    </TouchableOpacity>
+                    </View>
+                    <TextInput
+                        placeholder={"Password*"}
+                        secureTextEntry={true}
+                        placeholderTextColor={"grey"}
+                        onChangeText={(password) => setPassword(password)}
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        style={styles.TextInput}
+                    />
+                    <TextInput
+                        placeholder={"Confirm Password*"}
+                        secureTextEntry={true}
+                        placeholderTextColor={"grey"}
+                        onChangeText={(confirmpassword) => setConfirmpassword(confirmpassword)}
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        style={styles.TextInput}
+                    />
+                    <TouchableOpacity style={styles.Button} onPress={() => registerUser(fullname, email, mobile, password, confirmpassword)}>
+                        <Text style={styles.ButtonText}>SIGN UP</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-            
-            
+
+
         </KeyboardAvoidingView>
     )
 }
 
-const stylesa = StyleSheet.create({
-    MainHeading:{
-        fontSize:55,
-        marginTop:"25%",
-        marginLeft:"25%"
-        
+const styles = StyleSheet.create({
+    MainHeading: {
+        fontSize: 55,
+        marginTop: "25%",
+        marginLeft: "25%"
+    },
+    mainview: {
+        flex: 1,
+        flexDirection: 'column',
+        justifycontent: 'center',
+        alignitems: 'center',
+        backgroundColor: "#C0DBEA"
+    },
+    Topview: {
+        width: "100%",
+        height: "24%",
+        backgroundColor: "#C0DBEA",
+    },
+    Bottomview: {
+        width: "100%",
+        height: "80%",
+        backgroundColor: "#080202",
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+    },
+    icon: {
+        marginLeft: 15,
+        marginTop: 15
+    },
+    Imagestyle: {
+        width: "65%",
+        height: "100%",
+        resizeMode: "contain",
+        marginLeft: "17%"
+    },
+    Heading: {
+        color: "#73BBC9",
+        fontSize: 30,
+        fontWeight: "bold",
+        marginLeft: 30,
+        marginTop: 15,
+    },
+    TextInput: {
+        width: "90%",
+        height: 52,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: "#73BBC9",
+        paddingLeft: 10,
+        marginTop: 20,
+        color: "#73BBC9",
+    },
+    Formview: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: 10,
+    },
+    Formview1: {
+        width: "80%",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 5,
+        marginRight: 35
+    },
+    TextInput1: {
+        width: "80%",
+        height: 52,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: "#73BBC9",
+        paddingLeft: 10,
+        marginTop: 20,
+        color: "#73BBC9",
+    },
+    Vbutton: {
+        height: "60%",
+        width: "30%",
+        padding: 10,
+        marginTop: 20,
+        borderRadius: 10,
+        marginLeft: 8
+    },
+    vtext: {
+        color: "#73BBC9",
+        textAlign: 'center',
+        fontSize: 17,
+        fontWeight: "bold"
 
-
     },
-
-
-    mainview:{
-        
-        flex:1,
-        flexDirection:'column',
-        justifycontent:'center',
-        alignitems:'center',
-        backgroundColor:"#C0DBEA"
+    Button: {
+        width: "90%",
+        height: 52,
+        backgroundColor: "#73BBC9",
+        borderRadius: 10,
+        marginTop: 20,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
-    Topview:{
-        width:"100%",
-        height:"24%",
-        backgroundColor:"#C0DBEA",
-       
+    ButtonText: {
+        fontWeight: "bold",
+        fontSize: 18,
+        color: "#000"
     },
-    Bottomview:{
-        width:"100%",
-        height:"80%",
-        backgroundColor:"#080202",
-        borderTopLeftRadius:30,
-        borderTopRightRadius:30,
-
+    SignUpText: {
+        color: "#73BBC9"
     },
-    Imagestyle:{
-        width:"65%",
-        height:"100%",
-        resizeMode:"contain",
-        marginLeft:"17%"
-    },
-    Heading:{
-        color:"#73BBC9",
-        fontSize:30,
-        fontWeight:"bold",
-        marginLeft:30,
-        marginTop:70,
-    },
-    TextInput:{
-        width:"90%",
-        height:52,
-        borderWidth:1,
-        borderRadius:10,
-        borderColor:"#73BBC9",
-        paddingLeft:10,
-        marginTop:20,
-        color:"#73BBC9",
-    },
-    Formview:{
-        width:"100%",
-        display:"flex",
-        flexDirection:"column",
-        alignItems:"center",
-        marginTop:30,
-       
-    },
-    Button:{
-        width:"90%",
-        height:52,
-        // color:"#F8325C",
-        backgroundColor:"#73BBC9",
-        borderRadius:10,
-        marginTop:20,
-        display:"flex",
-        justifyContent:"center",
-        alignItems:"center"
-    },
-    ButtonText:{
-        fontWeight:"bold",
-        fontSize:18,
-        color:"#000"
-    },
-    SignUpText:{
-        color:"#73BBC9"
-    },
-    TextButton:{
-        width:"100%",
-        display:"flex",
-        alignItems:"center",
-        marginTop:20,
-        
+    TextButton: {
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        marginTop: 20,
     }
-
-
-
 });
 
 export default SignUp;

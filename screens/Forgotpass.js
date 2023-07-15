@@ -2,7 +2,7 @@ import React from "react";
 import{View,Text, KeyboardAvoidingView,StyleSheet,Image,ScrollView,TextInput,TouchableOpacity} from "react-native";
 import * as Font from 'expo-font';
 import {useState, useEffect} from 'react'
-
+import { firebase } from '../firebaseConfig';
 
 const CustomText = (props) => {
     const [fontLoaded, setFontLoaded] = useState(false);
@@ -30,30 +30,50 @@ const CustomText = (props) => {
     );
   };
 
-
 function Forgotpass(navigation){
 
+
+
+  const [email, setEmail] = useState('')
+
+
+  const forgotpassword = () => {
+    firebase.auth().sendPasswordResetEmail(email)
+    .then(() => {
+      alert("Password Reset Email Sent")
+    })
+    .catch((error) => {
+      alert(error)
+    })
+  }
+
     return(
-        <KeyboardAvoidingView style={stylesa.mainview}>
+        <KeyboardAvoidingView style={styles.mainview}>
         <ScrollView>
         <View>
-            <Image style={stylesa.Imagestyle} source={require('../assets/password.png')} />
+            <Image style={styles.Imagestyle} source={require('../assets/password.png')} />
         </View>
         <View>
-            <CustomText style={stylesa.text1}>Forgot Password?</CustomText> 
-            <Text style={stylesa.text2}>Please enter your email address to recive{'\n'}a verification code</Text>
-            <TextInput placeholder={"Email Adresss*"} placeholderTextColor={'grey'} style={stylesa.textinput} />
-            <TouchableOpacity style={stylesa.Button} onPress={() => navigation.navigate('Verifyotp')}> 
-                <Text style={stylesa.ButtonText}>Send Email</Text>
+            <CustomText style={styles.text1}>Forgot Password?</CustomText> 
+            <Text style={styles.text2}>Please enter your email address to change{'\n'}your password</Text>
+            <TextInput 
+            placeholder={"Email Adresss*"} 
+            placeholderTextColor={'grey'}
+            onChangeText={(email) => setEmail(email)}
+            autoCorrect={false} 
+            autoCapitalize="none" 
+            style={styles.textinput} 
+            />
+            <TouchableOpacity style={styles.Button} onPress={() => {forgotpassword()}}> 
+                <Text style={styles.ButtonText}>Send Email</Text>
             </TouchableOpacity>
-
         </View>
         </ScrollView>
         </KeyboardAvoidingView>
     );
 }
 
-const stylesa = StyleSheet.create({
+const styles = StyleSheet.create({
     Imagestyle:{
         height:200,
         width:200,
@@ -62,10 +82,8 @@ const stylesa = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center",
         marginHorizontal:"24%",
-
     },
     mainview:{
-        
         flex:1,
         flexDirection:'column',
         justifycontent:'center',
@@ -81,7 +99,6 @@ const stylesa = StyleSheet.create({
         textAlign:"center",
         paddingTop:"8%",
         fontSize:15,
-        // fontWeight:"bold",
         color:"#C0DBEA"
     },
     textinput:{
@@ -93,8 +110,7 @@ const stylesa = StyleSheet.create({
         paddingLeft:10,
         marginTop:"10%",
         color:'#73BBC9',
-        marginHorizontal:"8%"
-        
+        marginHorizontal:"8%"        
     },
     Button:{
         width:"85%",
@@ -111,7 +127,6 @@ const stylesa = StyleSheet.create({
         color:"#080202",
         fontWeight:"bold",
         fontSize:18
-    }
-  
+    } 
 })
 export default Forgotpass;
