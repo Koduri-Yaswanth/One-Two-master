@@ -1,18 +1,19 @@
 import React from 'react';  
 import {Text, StyleSheet, View, Image, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native';
 import * as Font from 'expo-font';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { firebase } from '../firebaseConfig';
+
 
 const CustomText = (props) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
-    async function loadFont() {
+  async function loadFont() {
       await Font.loadAsync({
-        'custom-font': require('../assets/fonts/KaushanScript.ttf'),
-      });
+          'custom-font': require('../assets/fonts/KaushanScript.ttf'),
+        });
 
       setFontLoaded(true);
     }
