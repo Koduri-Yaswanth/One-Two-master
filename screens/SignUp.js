@@ -45,7 +45,7 @@ function SignUp(navigaton) {
       .then(() => {
         firebase
           .auth()
-          .currentUser.emailVerified({
+          .currentUser.sendEmailVerification({
             handleCodeInApp: true,
             url: "https://one-two-master.firebaseapp.com",
           })
@@ -61,9 +61,6 @@ function SignUp(navigaton) {
                 userMobile: mobile,
                 userPassword: password,
               })
-              // .then(() => {
-              //   alert("user data is saved");
-              // })
               .catch(error);
           });
       });

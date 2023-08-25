@@ -15,7 +15,7 @@ function Mainscreen() {
     if (emailVerified) {
      userData()
     }
-  }, [name]);
+  }, [name,emailVerified]);
   
 const userVerificaton=async() => {
     const userVerified = firebase.auth().currentUser.emailVerified;
@@ -39,7 +39,7 @@ const userData=async() => {
 }
   return (
     <SafeAreaView style={styles.container}>
-      
+      {emailVerified ? (
         <View>
           <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>
             Hello, {name}
@@ -50,15 +50,15 @@ const userData=async() => {
             </Text>
           </TouchableOpacity>
         </View>
-      {/* ) : (
+      ) : (
           <View>
             <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>Email is not Verified</Text>
             <TouchableOpacity>
               <Text style={{color:'white'}}>check Mail</Text>
             </TouchableOpacity>
         </View>
-      ) */}
-      
+      )
+      }
     </SafeAreaView>
   );
 }
